@@ -29,19 +29,21 @@ int main()
 	// create a list of vertices, every three floats will be a coordinate
 	GLfloat vertices[] =
 	{ //	  COORDINATES	   /	     COLORS		//
-		-0.9f, -0.7f, -0.5f,		0.8f, 0.3f, 0.02f,	// lower left corner
-		0.6f, -0.9f, 0.3f,		0.8f, 0.3f, 0.02f,	// lower right corner
-		0.1f, 0.8f, 0.1f,		1.0f, 0.6f, 0.32f,	// upper corner
-		-0.3f, -0.1f, -0.4f,		0.9f, 0.45f, 0.17f,	// inner left
-		0.3f, -0.1f, 0.9f,		0.9f, 0.45f, 0.17f,	// inner right
-		0.1f, -0.8f, -0.6f,		0.8f, 0.3f, 0.02f,	// inner down
+		-0.5f, 0.0f, 0.5f,		0.8f, 0.3f, 0.02f,	// lower left corner
+		-0.5f, 0.0f, -0.5f,		0.8f, 0.3f, 0.02f,	// lower right corner
+		0.5f, 0.0f, -0.5f,		1.0f, 0.6f, 0.32f,	// upper corner
+		0.5f, 0.0f, 0.5f,		0.9f, 0.45f, 0.17f,	// inner left
+		0.0f, 0.8f, 0.0f,		0.9f, 0.45f, 0.17f,	// inner right
 	};
 
 	GLuint indices[] =
 	{
-		0, 3, 5, // lower left triangle
-		3, 2, 4, // lower right triangle
-		5, 4, 1 // upper triangle
+		0, 1, 2, 
+		0, 2, 3, 
+		0, 1, 4,
+		1, 2, 4,
+		2, 3, 4,
+		3, 0, 4
 	};
 
 
@@ -93,6 +95,9 @@ int main()
 
 	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
+	float rotation = 0.0f;
+	double prevTime = glfwGetTime();
+
 	// we need to have a while loop, like a game loop
 	// if there is no while loop the window will immediately die
 	while (!glfwWindowShouldClose(window))
@@ -102,12 +107,22 @@ int main()
 		// add color to back buffer
 		glClear(GL_COLOR_BUFFER_BIT);
 
+
+		double crntTime = glfwGetTime();
+		if (crntTime - prevTime >= 1 / 60)
+		{
+			rotation += 0.05f;
+			prevTime = crntTime;
+		}
+
 		shaderProgram.Activate();
 
 		// make matrices of 1s
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 proj = glm::mat4(1.0f);
+
+		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
 		view = glm::translate(view, glm::vec3(0.0, -0.5f, -2.0f));
 		proj = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
 		
@@ -124,7 +139,7 @@ int main()
 	
 		// draw the elements on the screen, it takes the type, the amount of
 		// indices, the data type of the indices, and the index of the start of the indices
-		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
 
 		// swap the front and back buffers of the window
 		glfwSwapBuffers(window);
