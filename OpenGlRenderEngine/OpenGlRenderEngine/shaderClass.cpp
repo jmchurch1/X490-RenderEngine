@@ -35,12 +35,13 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 	// compile the source code for the vertex shader into machine code since
 	// OpenGL can't understand the uncompiled source code
 	glCompileShader(vertexShader);
+	compileErrors(vertexShader, "VERTEX");
 
 	// same as for vertex shader
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
 	glCompileShader(fragmentShader);
-
+	compileErrors(fragmentShader, "FRAG");
 	ID = glCreateProgram();
 
 	// attach the two shaders that we just created to the program
@@ -48,6 +49,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 	glAttachShader(ID, fragmentShader);
 	// wrap up the shader program
 	glLinkProgram(ID);
+	compileErrors(ID, "PROGRAM");
 
 	// delete the two shaders that were created since they are in the program
 	glDeleteShader(vertexShader);
@@ -62,4 +64,29 @@ void Shader::Activate() {
 // Delete the shader
 void Shader::Delete() {
 	glDeleteProgram(ID);
+}
+
+void Shader::compileErrors(unsigned int shader, const char* type)
+{
+	GLint hasCompiled;
+	char infoLog[1024];
+	if (type != "PROGRAM")
+
+	{
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
+		if (hasCompiled == GL_FALSE)
+		{
+			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+			std::cout << "SHADER_COMPILATION_ERROR for: " << type << "\n" << std::endl;
+		}
+	}
+	else
+	{
+		glGetProgramiv(shader, GL_COMPILE_STATUS, &hasCompiled);
+		if (hasCompiled == GL_FALSE)
+		{
+			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+			std::cout << "SHADER_LINKING_ERROR for: " << type << "\n" << std::endl;
+		}
+	}
 }
