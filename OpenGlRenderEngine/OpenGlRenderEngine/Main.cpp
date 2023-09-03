@@ -98,6 +98,8 @@ int main()
 	float rotation = 0.0f;
 	double prevTime = glfwGetTime();
 
+	glEnable(GL_DEPTH_TEST);
+
 	// we need to have a while loop, like a game loop
 	// if there is no while loop the window will immediately die
 	while (!glfwWindowShouldClose(window))
@@ -105,7 +107,7 @@ int main()
 		// clear the color every frame
 		glClearColor(.5f, .3f, .7f, 1.0f);
 		// add color to back buffer
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		double crntTime = glfwGetTime();
