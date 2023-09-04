@@ -98,6 +98,7 @@ int main()
 	float rotation = 0.0f;
 	double prevTime = glfwGetTime();
 
+	// enable the depth buffer
 	glEnable(GL_DEPTH_TEST);
 
 	// we need to have a while loop, like a game loop
@@ -124,10 +125,14 @@ int main()
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 proj = glm::mat4(1.0f);
 
+		// set the rotation matrix that will be applied to the shader program, specifically the vertices
 		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-		view = glm::translate(view, glm::vec3(0.0, -0.5f, -2.0f));
+		// set the translation of the camera view so it is not in the middle of the vertices
+		view = glm::translate(view, glm::vec3(0.0, -0.5f, -1.0f));
+		// not entirely sure how fov works with matrix math
 		proj = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
 		
+		// apply matrices to the vertex shader
 		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		int viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
