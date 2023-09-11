@@ -1,6 +1,6 @@
 #include"EBO.h"
 
-EBO::EBO(GLuint* indices, GLsizeiptr size)
+EBO::EBO(std::vector<GLuint> indices)
 {
 	// generate buffers
 	glGenBuffers(1, &ID);
@@ -10,7 +10,7 @@ EBO::EBO(GLuint* indices, GLsizeiptr size)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
 	// store the vertices in the VBO
 	// DRAW means that the vertices are used to draw vertices onto the screen
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 }
 
 // Bind the EBO
