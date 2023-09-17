@@ -12,5 +12,5 @@ uniform sampler2D specular0;
 
 void main()
 {
-   FragColor = texture(diffuse0, texCoord);
+  FragColor = texture(diffuse0, texCoord);
 }

@@ -135,6 +135,7 @@ std::vector<unsigned char> Model::getData()
 	// Store raw text data into bytesText
 	std::string fileStr = std::string(file);
 	std::string fileDirectory = fileStr.substr(0, fileStr.find_last_of('/') + 1);
+	//std::cout << fileDirectory + uri << std::endl;
 	bytesText = get_file_contents((fileDirectory + uri).c_str());
 
 	// Transform the raw text data into bytes and put them in a vector

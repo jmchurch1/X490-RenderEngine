@@ -21,9 +21,9 @@ out vec2 texCoord;
 
 
 
-// Imports the camera matrix from the main function
+// Imports the camera matrix
 uniform mat4 camMatrix;
-// Imports the model matrix from the main function
+// Imports the transformation matrices
 uniform mat4 model;
 uniform mat4 translation;
 uniform mat4 rotation;

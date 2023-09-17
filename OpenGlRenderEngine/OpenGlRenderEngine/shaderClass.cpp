@@ -1,6 +1,5 @@
 #include"shaderClass.h"
 
-// reads file
 std::string get_file_contents(const char* filename)
 {
 	std::ifstream in(filename, std::ios::binary);
@@ -41,7 +40,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
 	glCompileShader(fragmentShader);
-	compileErrors(fragmentShader, "FRAG");
+	compileErrors(fragmentShader, "FRAGMENT");
 	ID = glCreateProgram();
 
 	// attach the two shaders that we just created to the program

@@ -1,0 +1,215 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "TurboSquid Stem Converter v1.0.0"
+  },
+  "accessors": [
+    {
+      "bufferView": 0,
+      "byteOffset": 0,
+      "componentType": 5126,
+      "count": 2340,
+      "type": "VEC3",
+      "max": [
+        0.047408465296030045,
+        0.01200261153280735,
+        0.059826161712408066
+      ],
+      "min": [
+        -0.04812954366207123,
+        -0.011884314939379692,
+        -0.07050975412130356
+      ]
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 0,
+      "componentType": 5126,
+      "count": 2340,
+      "type": "VEC3",
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -0.999103844165802
+      ]
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 0,
+      "componentType": 5126,
+      "count": 2340,
+      "type": "VEC2",
+      "max": [
+        0.9548224210739136,
+        0.9984012842178345
+      ],
+      "min": [
+        0.005059653427451849,
+        0.01013338565826416
+      ]
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 0,
+      "componentType": 5123,
+      "count": 9486,
+      "type": "SCALAR",
+      "max": [
+        2339.0
+      ],
+      "min": [
+        0.0
+      ]
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 93852,
+      "uri": "Magnet Scene.bin"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 28080,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 28080,
+      "byteLength": 28080,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 56160,
+      "byteLength": 18720,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 74880,
+      "byteLength": 18972,
+      "target": 34963
+    }
+  ],
+  "materials": [
+    {
+      "name": "Magnet",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicRoughnessTexture": {
+          "index": 1
+        }
+      },
+      "alphaMode": "OPAQUE",
+      "occlusionTexture": {
+        "index": 1
+      },
+      "normalTexture": {
+        "index": 2
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Magnet_3D",
+      "primitives": [
+        {
+          "mode": 4,
+          "material": 0,
+          "indices": 3,
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          }
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ]
+    },
+    {
+      "name": "node",
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -4.371138857095502e-06,
+        -100.0,
+        0.0,
+        0.0,
+        100.0,
+        -4.371138857095502e-06,
+        0.0,
+        0.0,
+        8.957210540771484,
+        6.910803512049418e-17,
+        1.0
+      ],
+      "children": [
+        2
+      ]
+    },
+    {
+      "name": "Magnet_3D",
+      "mesh": 0
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "scene": 0,
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/baseColor.jpg"
+    },
+    {
+      "uri": "textures/occlusionRoughnessMetallic.jpg"
+    },
+    {
+      "uri": "textures/normal.png"
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ]
+}

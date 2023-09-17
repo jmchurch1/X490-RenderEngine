@@ -43,13 +43,14 @@ int main()
 
 	// generate Shader object that takes in shader source code
 	Shader shaderProgram("default.vert", "default.frag");
-	
+	shaderProgram.Activate();
+
 	// enable the depth buffer
 	glEnable(GL_DEPTH_TEST);
 
-	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 0.0f));
+	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 400.0f));
 
-	Model model("models/car/scene.gltf");
+	Model model("models/magnet/Magnet Scene.gltf");
 
 	// we need to have a while loop, like a game loop
 	// if there is no while loop the window will immediately die
@@ -61,7 +62,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		camera.Inputs(window);
-		camera.updateMatrix(45.0f, 0.1f, 100.0f);
+		camera.updateMatrix(45.0f, 0.1f, 500.0f);
 
 		model.Draw(shaderProgram, camera);
 
