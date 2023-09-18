@@ -71,7 +71,6 @@ void Mesh::Draw
 	trans = glm::translate(trans, translation);
 	rot = glm::mat4_cast(rotation);
 	sca = glm::scale(sca, scale);
-	sca = glm::scale(sca, glm::vec3(20.0f, 20.0f, 20.0f));
 
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "translation"), 1, GL_FALSE, glm::value_ptr(trans));
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "rotation"), 1, GL_FALSE, glm::value_ptr(rot));
