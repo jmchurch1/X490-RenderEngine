@@ -85,11 +85,11 @@ int main()
 	Mesh light(lightVerts, lightInd, tex);
 
 	glm::vec4 lightColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-	glm::vec3 lightPos = glm::vec3(0.5f, 0.0f, 10.0f);
+	glm::vec3 lightPos = glm::vec3(0.0f, 4.0f, 0.0f);
 	glm::mat4 lightModel = glm::mat4(1.0f);
 	lightModel = glm::translate(lightModel, lightPos);
 
-	glm::vec3 objectPos = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 objectPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::mat4 objectModel = glm::mat4(1.0f);
 	objectModel = glm::translate(objectModel, objectPos);
 
@@ -130,8 +130,20 @@ int main()
 		camera.Inputs(window);
 		camera.updateMatrix(45.0f, 0.1f, 700.0f);
 
-		model.Draw(shaderProgram, camera);
-		light.Draw(lightShader, camera);
+		model.Draw
+		(
+			shaderProgram, 
+			camera, 
+			glm::vec3(0.0f, 0.0f, -0.11f), 
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(1.0f, 1.0f, 1.0f)
+		);
+		light.Draw
+		(
+			lightShader, 
+			camera,
+			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 4.0f, 0.0f))
+		);
 
 		// swap the front and back buffers of the window
 		glfwSwapBuffers(window);

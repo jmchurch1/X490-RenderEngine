@@ -14,12 +14,29 @@ Model::Model(const char* file)
 	traverseNode(0);
 }
 
-void Model::Draw(Shader& shader, Camera& camera)
+void Model::Draw
+	(
+		Shader& shader, 
+		Camera& camera,
+		glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::quat rotation = glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f)
+	)
 {
+	// Initialize matrices
+	glm::mat4 trans = glm::mat4(1.0f);
+	glm::mat4 rot = glm::mat4(1.0f);
+	glm::mat4 sca = glm::mat4(1.0f);
+
+	// Use translation, rotation, and scale to change the initialized matrices
+	trans = glm::translate(trans, translation);
+	rot = glm::mat4_cast(rotation);
+	sca = glm::scale(sca, scale);
+
 	// Go over all meshes and draw each one
 	for (unsigned int i = 0; i < meshes.size(); i++)
 	{
-		meshes[i].Mesh::Draw(shader, camera, matricesMeshes[i]);
+		meshes[i].Mesh::Draw(shader, camera, matricesMeshes[i] * trans * rot * sca);
 	}
 }
 
