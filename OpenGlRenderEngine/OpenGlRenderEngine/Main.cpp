@@ -161,7 +161,7 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 
 		// clear the color every frame
-		glClearColor(.1f, .4f, .2f, 1.0f);
+		glClearColor(.1f, .1f, .2f, 1.0f);
 		// add color to back buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		

@@ -99,19 +99,28 @@ vec4 gooch()
 	vec3 newLightColor = yellow * blue;
 	newLightColor = yellow * (1 - intensity) + blue * intensity;
 
-	float threshold = 0.05f;
-	float luminance = dot(vec3(texture(diffuse0, texCoord) * vec4(newLightColor, 1.0f)), vec3(0.2126, 0.7152, 0.0722));
-	float gradient = fwidth(luminance);
-	
-	if (gradient > threshold) 
-	{
-		return vec4(0.0f,0.0f,0.0f,1.0f);
-	}
-
 	return texture(diffuse0, texCoord) * vec4(newLightColor, 1.0f);
+}
+
+vec4 toon()
+{
+	float intensity;
+	vec4 color;
+	vec3 lightDirection = normalize(lightPos - crntPos);
+	intensity = dot(lightDirection,normalize(Normal));
+
+	if (intensity > 0.95)
+		color = vec4(1.0,0.5,0.5,1.0);
+	else if (intensity > 0.5)
+		color = vec4(0.6,0.3,0.3,1.0);
+	else if (intensity > 0.25)
+		color = vec4(0.4,0.2,0.2,1.0);
+	else
+		color = vec4(0.2,0.1,0.1,1.0);
+	return color;
 }
 
 void main()
 {
-	FragColor = gooch();
+	FragColor = toon();
 }
