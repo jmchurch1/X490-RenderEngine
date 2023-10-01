@@ -119,7 +119,31 @@ int main()
 	double prevTime = glfwGetTime();
 
 	Framebuffer Framebuffer(width, height);	// get the framebuffer for a second pass
-	VAO ScreenQuad;
+	// VAO ScreenQuad;
+
+	float vertices[] =
+	{
+		-1.0f, 1.0f, 0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		1.0f, -1.0f, 1.0f, 0.0f,
+
+		-1.0f, 1.0f, 0.0f, 1.0f,
+		1.0f, -1.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+
+	};
+
+	// create quad vao
+	GLuint quadVAO, quadVBO;
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
 	// we need to have a while loop, like a game loop
 	// if there is no while loop the window will immediately die
@@ -171,7 +195,7 @@ int main()
 		// bind vertex array
 		
 		secondPass.Activate();											// activate the second pass shader
-		glBindVertexArray(ScreenQuad.quadVAO);							// bind the vertex array object with quad vertices
+		glBindVertexArray(quadVAO);										// bind the vertex array object with quad vertices
 		glBindTexture(GL_TEXTURE_2D, Framebuffer.textureColorBuffer);	// bind the color buffer
 		glDrawArrays(GL_TRIANGLES, 0, 6);								// draw the quad
 
