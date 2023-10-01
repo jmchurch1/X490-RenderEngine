@@ -83,7 +83,35 @@ vec4 spotLight()
 	return (texture(diffuse0, texCoord) * (diffuse * intensity + ambient) + texture(specular0, texCoord).r * specular * intensity) * lightColor;
 }
 
+vec4 gooch()
+{
+	vec3 yellow = vec3(1.0f, 1.0f, 1.0f);
+	vec3 blue = vec3(0.0f, 0.0f, 1.0f);
+
+	float ambient = 0.2f;
+	vec3 normal = normalize(Normal);
+	vec3 lightDirection = normalize(lightPos - crntPos);
+
+	// diffuse lighting
+	float diffuse = max(dot(normal, lightDirection), 0.0f); // take max so no negatives happen
+
+	float intensity = diffuse + ambient;
+	vec3 newLightColor = yellow * blue;
+	newLightColor = yellow * (1 - intensity) + blue * intensity;
+
+	float threshold = 0.05f;
+	float luminance = dot(vec3(texture(diffuse0, texCoord) * vec4(newLightColor, 1.0f)), vec3(0.2126, 0.7152, 0.0722));
+	float gradient = fwidth(luminance);
+	
+	if (gradient > threshold) 
+	{
+		return vec4(0.0f,0.0f,0.0f,1.0f);
+	}
+
+	return texture(diffuse0, texCoord) * vec4(newLightColor, 1.0f);
+}
+
 void main()
 {
-	FragColor = pointLight();
+	FragColor = gooch();
 }

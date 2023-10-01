@@ -1,4 +1,5 @@
 #include"Model.h"
+#include"Framebuffer.h"
 
 const unsigned int width = 800;
 const unsigned int height = 800;
@@ -42,6 +43,8 @@ int main()
 	};
 
 
+
+
 	// create a window for rendering
 	// input values:
 	// width: int
@@ -68,6 +71,7 @@ int main()
 	// specify the viewport of the OpenGL window
 	glViewport(0, 0, width, height);
 
+	Shader secondPass("secondPass.vert", "secondPass.frag");
 
 	// generate Shader object that takes in shader source code
 	Shader shaderProgram("default.vert", "default.frag");
@@ -101,6 +105,9 @@ int main()
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
+	//Framebuffer fbo = Framebuffer::Framebuffer(width, height);
+
+	// Set up shaders and state for second blur pass, and render.
 
 	// enable the depth buffer
 	glEnable(GL_DEPTH_TEST);
@@ -110,6 +117,9 @@ int main()
 	// Variables that help the rotation of the pyramid
 	float rotation = 0.0f;
 	double prevTime = glfwGetTime();
+
+	Framebuffer Framebuffer(width, height);	// get the framebuffer for a second pass
+	VAO ScreenQuad;
 
 	// we need to have a while loop, like a game loop
 	// if there is no while loop the window will immediately die
@@ -121,6 +131,10 @@ int main()
 			rotation += 0.5f;
 			prevTime = crntTime;
 		}
+
+		// bind framebuff so it is drawn to
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Framebuffer.ID);
+		glEnable(GL_DEPTH_TEST);
 
 		// clear the color every frame
 		glClearColor(.1f, .4f, .2f, 1.0f);
@@ -145,6 +159,27 @@ int main()
 			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 4.0f, 0.0f))
 		);
 
+		// bind back to the default framebuffer
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glDisable(GL_DEPTH_TEST);
+
+		// clear the color buffer, it will be behind the rendered quad
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// activate second pass shader
+		// bind vertex array
+		
+		secondPass.Activate();											// activate the second pass shader
+		glBindVertexArray(ScreenQuad.quadVAO);							// bind the vertex array object with quad vertices
+		glBindTexture(GL_TEXTURE_2D, Framebuffer.textureColorBuffer);	// bind the color buffer
+		glDrawArrays(GL_TRIANGLES, 0, 6);								// draw the quad
+
+		// bind texture color buffer
+		// draw the quad
+
+	
+
 		// swap the front and back buffers of the window
 		glfwSwapBuffers(window);
 
@@ -154,6 +189,8 @@ int main()
 
 	// delete all shader related objects created to clean up
 	shaderProgram.Delete();
+	secondPass.Delete();
+	lightShader.Delete();
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

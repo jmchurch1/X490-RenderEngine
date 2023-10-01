@@ -54,6 +54,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Framebuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -69,6 +72,15 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="cell.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="edge_detection.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="secondPass.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="secondPass.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
@@ -95,6 +107,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Framebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

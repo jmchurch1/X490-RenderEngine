@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="EBO.cpp" />
+    <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -165,12 +166,16 @@
     <None Include="cell.frag" />
     <None Include="default.frag" />
     <None Include="default.vert" />
+    <None Include="edge_detection.frag" />
     <None Include="light.frag" />
     <None Include="light.vert" />
+    <None Include="secondPass.frag" />
+    <None Include="secondPass.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EBO.h" />
+    <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Texture.h" />
