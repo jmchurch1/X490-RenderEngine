@@ -3,6 +3,8 @@
 
 const unsigned int width = 800;
 const unsigned int height = 800;
+float reflectionBoxSize = 2.0f;
+float bigBoxSize = 10.0f;
 
 int main()
 {
@@ -40,6 +42,20 @@ int main()
 		1, 4, 0,
 		4, 5, 6,
 		4, 6, 7
+	};
+
+	Vertex planeVertices[] =
+	{
+		Vertex{glm::vec3(-1.0f, -1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+		Vertex{glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
+		Vertex{glm::vec3(1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
+		Vertex{glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)},
+	};
+
+	GLuint planeIndices[] =
+	{
+		0, 1, 2,
+		0, 2, 3
 	};
 
 
@@ -84,9 +100,21 @@ int main()
 	// storing mesh data
 	std::vector <Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(Vertex));	// make vector of vertices with correct memory size
 	std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));		// make vector of indices with correct memory size
-	std::vector <Texture> tex;
+	std::vector <Texture> lightTex;
 
-	Mesh light(lightVerts, lightInd, tex);
+	Mesh light(lightVerts, lightInd, lightTex);
+
+	Shader boxShader("default.vert", "default.frag");
+	// storing mesh data
+	std::vector <Vertex> boxVerts(planeVertices, planeVertices + sizeof(planeVertices) / sizeof(Vertex));	// make vector of vertices with correct memory size
+	std::vector <GLuint> boxInd(planeIndices, planeIndices + sizeof(planeIndices) / sizeof(GLuint));		// make vector of indices with correct memory size
+	std::vector <Texture> boxTex = 
+	{ 
+		Texture("bricks.jpg", "diffuse", 0)
+	};
+
+	Mesh plane1(boxVerts, boxInd, boxTex);
+	Mesh plane2(boxVerts, boxInd, lightTex);
 
 	glm::vec4 lightColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.0f, 4.0f, 0.0f);
@@ -104,6 +132,10 @@ int main()
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	boxShader.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(boxShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
+	glUniform4f(glGetUniformLocation(boxShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	glUniform3f(glGetUniformLocation(boxShader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
 	//Framebuffer fbo = Framebuffer::Framebuffer(width, height);
 
@@ -111,6 +143,10 @@ int main()
 
 	// enable the depth buffer
 	glEnable(GL_DEPTH_TEST);
+
+	// enable alpha blending
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_BLEND);
 
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 4.0f));
 
@@ -160,6 +196,7 @@ int main()
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Framebuffer.ID);
 		glEnable(GL_DEPTH_TEST);
 
+
 		// clear the color every frame
 		glClearColor(.1f, .1f, .2f, 1.0f);
 		// add color to back buffer
@@ -180,8 +217,112 @@ int main()
 		(
 			lightShader, 
 			camera,
-			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 4.0f, 0.0f))
+			glm::mat4(1.0f), 
+			glm::vec3(0.0f, 4.0f, 0.0f)
 		);
+		plane1.Draw	// bottom
+		(
+			boxShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, bigBoxSize, 0.0f),
+			glm::quat(0.0f,0.0f,0.0f,1.0f),
+			glm::vec3(bigBoxSize,bigBoxSize,bigBoxSize)
+		);
+		plane1.Draw	// ceiling
+		(
+			boxShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, -bigBoxSize, 0.0f),
+			glm::quat(0.0f, 0.0f, 0.0f, 1.0f),
+			glm::vec3(bigBoxSize, bigBoxSize, bigBoxSize)
+		);
+		plane1.Draw // right wall
+		(
+			boxShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, bigBoxSize, 2.0f * bigBoxSize),
+			glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
+			glm::vec3(bigBoxSize, bigBoxSize, bigBoxSize)
+		);
+		plane1.Draw // left wall
+		(
+			boxShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, bigBoxSize, 0.0f),
+			glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
+			glm::vec3(bigBoxSize, bigBoxSize, bigBoxSize)
+		);
+		plane1.Draw // back wall
+		(
+			boxShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(-2.0f * bigBoxSize, bigBoxSize, 0.0f),
+			glm::quat(0.7071f, 0.0f, 0.0f, 0.7071f),
+			glm::vec3(bigBoxSize, bigBoxSize, bigBoxSize)
+		);
+
+
+		plane1.Draw	// bottom
+		(
+			lightShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 0.0f),
+			glm::quat(0.0f, 0.0f, 0.0f, 1.0f),
+			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+		);
+		plane1.Draw	// ceiling
+		(
+			lightShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, -reflectionBoxSize + bigBoxSize, 0.0f),
+			glm::quat(0.0f, 0.0f, 0.0f, 1.0f),
+			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+		);
+		plane1.Draw // right wall
+		(
+			lightShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 2.0f * reflectionBoxSize),
+			glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
+			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+		);
+		plane1.Draw // left wall
+		(
+			lightShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 0.0f),
+			glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
+			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+		);
+		plane1.Draw // back wall
+		(
+			lightShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(-2.0f * reflectionBoxSize, reflectionBoxSize + bigBoxSize, 0.0f),
+			glm::quat(0.7071f, 0.0f, 0.0f, 0.7071f),
+			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+		);
+		plane1.Draw // front wall
+		(
+			lightShader,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 0.0f),
+			glm::quat(0.7071f, 0.0f, 0.0f, 0.7071f),
+			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+		);
+
+
 
 		// bind back to the default framebuffer
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);

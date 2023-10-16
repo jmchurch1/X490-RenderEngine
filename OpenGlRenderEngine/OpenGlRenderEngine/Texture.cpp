@@ -8,6 +8,7 @@ Texture::Texture(const char* image, const char* texType, GLuint slot)
 	stbi_set_flip_vertically_on_load(true);
 	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
 
+	std::cout << "number of color channels: " << numColCh << std::endl;
 	glGenTextures(1, &ID);
 	glActiveTexture(GL_TEXTURE0 + slot);
 	unit = slot;

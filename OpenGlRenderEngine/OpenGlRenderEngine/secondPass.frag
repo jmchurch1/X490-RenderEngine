@@ -65,5 +65,6 @@ vec4 blur()
 
 void main()
 {
-    FragColor = blur();
+    // FragColor = texture(screenTexture, texCoord);
+    FragColor = detect();
 }

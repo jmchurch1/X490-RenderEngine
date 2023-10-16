@@ -163,6 +163,7 @@
     <ClCompile Include="VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="basic.frag" />
     <None Include="cell.frag" />
     <None Include="default.frag" />
     <None Include="default.vert" />
@@ -184,6 +185,8 @@
     <ClInclude Include="shaderClass.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\..\..\..\Downloads\brick.jpg" />
+    <Image Include="..\..\..\..\..\..\Downloads\bricks.jpg" />
     <Image Include="sample.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
