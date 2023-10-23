@@ -8,7 +8,6 @@ in vec3 color;
 
 in vec2 texCoord;
 
-
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 
@@ -122,5 +121,8 @@ vec4 toon()
 
 void main()
 {
-	FragColor = texture(diffuse0, texCoord);
+	vec3 viewDirection = normalize(camPos - crntPos);
+	vec3 reflectVec = normalize(reflect(viewDirection, Normal));
+	reflectVec.x *= -1.0;
+	FragColor = textureCube(diffuse0, reflectVec);
 }

@@ -3,6 +3,8 @@
 
 #include<glad/glad.h>
 #include<stb/stb_image.h>
+#include<string>
+#include<vector>
 
 #include"shaderClass.h"
 
@@ -12,6 +14,7 @@ class Texture
 		GLuint ID;
 		const char* type;
 		Texture(const char* image, const char* texType, GLuint slot);
+ 
 		GLuint unit;
 
 		void texUnit(Shader& shader, const char* uniform, GLuint unit);

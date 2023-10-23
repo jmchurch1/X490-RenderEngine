@@ -5,6 +5,125 @@ const unsigned int width = 800;
 const unsigned int height = 800;
 float reflectionBoxSize = 2.0f;
 float bigBoxSize = 10.0f;
+float skyBoxSize = 500;
+
+void DrawBox(Shader shaderProgram, Camera camera, Mesh plane1)
+{
+	plane1.Draw	// bottom
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 0.0f),
+		glm::quat(0.0f, 0.0f, 0.0f, 1.0f),
+		glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+	);
+	plane1.Draw	// ceiling
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(0.0f, -reflectionBoxSize + bigBoxSize, 0.0f),
+		glm::quat(0.0f, 0.0f, 0.0f, 1.0f),
+		glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+	);
+	plane1.Draw // right wall
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 2.0f * reflectionBoxSize),
+		glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
+		glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+	);
+	plane1.Draw // left wall
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 0.0f),
+		glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
+		glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+	);
+	plane1.Draw // back wall
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(-2.0f * reflectionBoxSize, reflectionBoxSize + bigBoxSize, 0.0f),
+		glm::quat(0.7071f, 0.0f, 0.0f, 0.7071f),
+		glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+	);
+	plane1.Draw // front wall
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 0.0f),
+		glm::quat(0.7071f, 0.0f, 0.0f, 0.7071f),
+		glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
+	);
+}
+void DrawSkybox(Shader shaderProgram, Camera camera, Mesh right, Mesh left, Mesh top, Mesh bottom, Mesh front, Mesh back)
+{
+	glm::vec3 center = camera.Position;
+
+
+	bottom.Draw	// bottom
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(-center.x, skyBoxSize - skyBoxSize/2 - center.y, -center.z),
+		glm::quat(0.0f, 0.0f, 0.0f, 1.0f),
+		glm::vec3(skyBoxSize, skyBoxSize, skyBoxSize)
+	);
+	top.Draw	// ceiling
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(-center.x, -skyBoxSize - skyBoxSize / 2 - center.y, -center.z),
+		glm::quat(0.0f, 0.0f, 0.0f, 1.0f),
+		glm::vec3(skyBoxSize, skyBoxSize, skyBoxSize)
+	);
+	right.Draw // right wall
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(-center.x, skyBoxSize - skyBoxSize / 2 - center.y, 2.0f * skyBoxSize + -center.z),
+		glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
+		glm::vec3(skyBoxSize, skyBoxSize, skyBoxSize)
+	);
+	left.Draw // left wall
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(-center.x, skyBoxSize - skyBoxSize / 2 - center.y, -center.z),
+		glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
+		glm::vec3(skyBoxSize, skyBoxSize, skyBoxSize)
+	);
+	back.Draw // back wall
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(-center.x -2.0f * skyBoxSize, skyBoxSize - skyBoxSize / 2 - center.y, -center.z),
+		glm::quat(0.7071f, 0.0f, 0.0f, 0.7071f),
+		glm::vec3(skyBoxSize, skyBoxSize, skyBoxSize)
+	);
+	front.Draw // front wall
+	(
+		shaderProgram,
+		camera,
+		glm::mat4(1.0f),
+		glm::vec3(-center.x, skyBoxSize - skyBoxSize / 2 - center.y, -center.z),
+		glm::quat(0.7071f, 0.0f, 0.0f, 0.7071f),
+		glm::vec3(skyBoxSize, skyBoxSize, skyBoxSize)
+	);
+}
 
 int main()
 {
@@ -58,6 +177,89 @@ int main()
 		0, 2, 3
 	};
 
+	GLuint skyboxIndices[] = {
+		//Top
+		2, 6, 7,
+		2, 3, 7,
+
+		//Bottom
+		0, 4, 5,
+		0, 1, 5,
+
+		//Left
+		0, 2, 6,
+		0, 4, 6,
+
+		//Right
+		1, 3, 7,
+		1, 5, 7,
+
+		//Front
+		0, 2, 3,
+		0, 1, 3,
+
+		//Back
+		4, 6, 7,
+		4, 5, 7
+	};
+
+	Vertex skyboxVertices[] = {
+		Vertex{ glm::vec3( -1.0f, -1.0f,  1.0f ), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)  },
+		Vertex{ glm::vec3( 1.0f, -1.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
+		Vertex{ glm::vec3( -1.0f,  1.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) },
+		Vertex{ glm::vec3( 1.0f,  1.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f) },
+		Vertex{ glm::vec3( -1.0f, -1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) },
+		Vertex{ glm::vec3( 1.0f, -1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
+		Vertex{ glm::vec3( -1.0f,  1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) },
+		Vertex{ glm::vec3( 1.0f,  1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f) }
+	};
+
+	float skyboxVerticesLong[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+
+
 
 
 
@@ -89,6 +291,8 @@ int main()
 
 	Shader secondPass("secondPass.vert", "secondPass.frag");
 
+
+	//Shader reflectShader("default.vert", "reflect.frag");
 	// generate Shader object that takes in shader source code
 	Shader shaderProgram("default.vert", "default.frag");
 	shaderProgram.Activate();
@@ -113,8 +317,57 @@ int main()
 		Texture("bricks.jpg", "diffuse", 0)
 	};
 
+	Shader skyboxShader("skybox.vert", "skybox.frag");
+
+	// https://learnopengl.com/Advanced-OpenGL/Cubemaps
+	std::vector<std::string> faces =
+	{
+			"right.png",
+			"left.png",
+			"top.png",
+			"bottom.png",
+			"front.png",
+			"back.png"
+	};
+
+	// storing mesh data
+	std::vector <Vertex> skyboxVerts(skyboxVertices, skyboxVertices + sizeof(skyboxVertices) / sizeof(Vertex));		// make vector of vertices with correct memory size
+	std::vector <GLuint> skyboxInd(skyboxIndices, skyboxIndices + sizeof(skyboxIndices) / sizeof(GLuint));		// make vector of indices with correct memory size
+	std::vector <Texture> rightTex =
+	{
+		Texture("right.png", "diffuse", 0),
+	};
+	std::vector <Texture> leftTex =
+	{
+		Texture("left.png", "diffuse", 0)
+	};
+	std::vector <Texture> topTex =
+	{
+		Texture("top.png", "diffuse", 0)
+	};
+	std::vector <Texture> bottomTex =
+	{
+		Texture("bottom.png", "diffuse", 0)
+	};
+	std::vector <Texture> frontTex =
+	{
+		Texture("front.png", "diffuse", 0)
+	};
+	std::vector <Texture> backTex =
+	{
+		Texture("back.png", "diffuse", 0)
+	};
+
 	Mesh plane1(boxVerts, boxInd, boxTex);
-	Mesh plane2(boxVerts, boxInd, lightTex);
+	Mesh plane2(boxVerts, boxInd, boxTex);
+
+	Mesh right(boxVerts, boxInd, rightTex);
+	Mesh left(boxVerts, boxInd, leftTex);
+	Mesh top(boxVerts, boxInd, topTex);
+	Mesh bottom(boxVerts, boxInd, bottomTex);
+	Mesh front(boxVerts, boxInd, frontTex);
+	Mesh back(boxVerts, boxInd, backTex);
+
 
 	glm::vec4 lightColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.0f, 4.0f, 0.0f);
@@ -181,6 +434,10 @@ int main()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
 	// we need to have a while loop, like a game loop
 	// if there is no while loop the window will immediately die
 	while (!glfwWindowShouldClose(window))
@@ -203,7 +460,12 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		camera.Inputs(window);
-		camera.updateMatrix(45.0f, 0.1f, 700.0f);
+		camera.updateMatrix(45.0f, 0.1f, 6000.0f);
+
+		glDepthMask(GL_FALSE);
+		// ... set view and projection matrix
+		DrawSkybox(boxShader, camera, right, left, top, bottom, front, back);
+		glDepthMask(GL_TRUE);
 
 		model.Draw
 		(
@@ -266,62 +528,8 @@ int main()
 			glm::vec3(bigBoxSize, bigBoxSize, bigBoxSize)
 		);
 
-
-		plane1.Draw	// bottom
-		(
-			lightShader,
-			camera,
-			glm::mat4(1.0f),
-			glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 0.0f),
-			glm::quat(0.0f, 0.0f, 0.0f, 1.0f),
-			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
-		);
-		plane1.Draw	// ceiling
-		(
-			lightShader,
-			camera,
-			glm::mat4(1.0f),
-			glm::vec3(0.0f, -reflectionBoxSize + bigBoxSize, 0.0f),
-			glm::quat(0.0f, 0.0f, 0.0f, 1.0f),
-			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
-		);
-		plane1.Draw // right wall
-		(
-			lightShader,
-			camera,
-			glm::mat4(1.0f),
-			glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 2.0f * reflectionBoxSize),
-			glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
-			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
-		);
-		plane1.Draw // left wall
-		(
-			lightShader,
-			camera,
-			glm::mat4(1.0f),
-			glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 0.0f),
-			glm::quat(0.5f, 0.5f, 0.5f, 0.5f),
-			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
-		);
-		plane1.Draw // back wall
-		(
-			lightShader,
-			camera,
-			glm::mat4(1.0f),
-			glm::vec3(-2.0f * reflectionBoxSize, reflectionBoxSize + bigBoxSize, 0.0f),
-			glm::quat(0.7071f, 0.0f, 0.0f, 0.7071f),
-			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
-		);
-		plane1.Draw // front wall
-		(
-			lightShader,
-			camera,
-			glm::mat4(1.0f),
-			glm::vec3(0.0f, reflectionBoxSize + bigBoxSize, 0.0f),
-			glm::quat(0.7071f, 0.0f, 0.0f, 0.7071f),
-			glm::vec3(reflectionBoxSize, reflectionBoxSize, reflectionBoxSize)
-		);
-
+		
+		DrawBox(shaderProgram, camera, plane2);
 
 
 		// bind back to the default framebuffer
