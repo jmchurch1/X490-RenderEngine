@@ -398,8 +398,9 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// enable alpha blending
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 4.0f));
 

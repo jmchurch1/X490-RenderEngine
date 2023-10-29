@@ -3,6 +3,7 @@ out vec4 FragColor;
 
 in vec3 Normal;
 in vec3 crntPos;
+in vec3 fPosition;
 
 in vec3 color;
 
@@ -15,6 +16,10 @@ uniform sampler2D specular0;
 uniform vec4 lightColor;
 uniform vec3 lightPos;
 uniform vec3 camPos;
+
+float fog_maxdist = 40.0;
+float fog_mindist = 0.1;
+vec4  fog_colour = vec4(0.4, 0.4, 0.4, 1.0);
 
 vec4 pointLight()
 {
@@ -120,7 +125,18 @@ vec4 toon()
 	return color;
 }
 
+vec4 fog()
+{
+    // Calculate fog
+    float dist = length(fPosition.xyz);
+    float fog_factor = (fog_maxdist - dist) /
+                      (fog_maxdist - fog_mindist);
+    fog_factor = clamp(fog_factor, 0.0, 0.75);
+
+    return mix(fog_colour, texture(diffuse0, texCoord), fog_factor);
+}
+
 void main()
 {
-	FragColor = texture(diffuse0, texCoord);
+	FragColor = fog();
 }

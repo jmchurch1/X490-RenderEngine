@@ -18,6 +18,9 @@ out vec3 Normal;
 out vec3 color;
 // Outputs the texture coordinates to the Fragment Shader
 out vec2 texCoord;
+// position relative to camera
+out vec4 gl_Position;
+out vec3 fPosition;
 
 
 
@@ -32,6 +35,7 @@ uniform mat4 scale;
 
 void main()
 {
+	
 	// calculates current position
 	crntPos = vec3(model * translation * -rotation * scale * vec4(aPos, 1.0f));
 	// Assigns the normal from the Vertex Data to "Normal"
@@ -43,4 +47,5 @@ void main()
 	
 	// Outputs the positions/coordinates of all vertices
 	gl_Position = camMatrix * vec4(crntPos, 1.0);
+	fPosition = gl_Position.xyz;
 }
