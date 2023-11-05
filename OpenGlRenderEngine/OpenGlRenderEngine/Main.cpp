@@ -7,6 +7,57 @@ float reflectionBoxSize = 2.0f;
 float bigBoxSize = 10.0f;
 float skyBoxSize = 500;
 
+glm::vec3 PointOnCircle(glm::vec3 center, float radius, float angle)
+{
+	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
+	pos.x = center.x;
+	pos.y = center.y + radius * cos(angle * (3.14159 / 180));;
+	pos.z = center.z + +radius * sin(angle * (3.14159 / 180));
+	return pos;
+}
+
+
+void DrawMagnetEffect(Shader shaderProgram, Camera camera, Mesh baseObj, float currentTime, int maxTime, float radius, float speed, float scale, glm::vec3 startPosition, glm::vec3 directionVector, int effects)
+{
+	float baseRadius = 0.2f;
+
+	for (int j = 0; j < effects; j++)
+	{
+
+		for (int i = 0; i < 361; i++)
+		{
+			if (currentTime > maxTime)
+			{
+				float decimals = currentTime - float(int(currentTime));
+				currentTime = (int(currentTime) % maxTime) + decimals;
+			}
+
+			currentTime += (float(j) / float(effects)) * float(maxTime);
+
+			glm::vec3 translation;
+
+			if (speed > 0)
+			{
+				translation = PointOnCircle(startPosition, (radius - baseRadius) * (currentTime / float(maxTime)) + baseRadius, float(i));
+			}
+			else
+			{
+				translation = PointOnCircle(startPosition, radius * (maxTime*2 - (currentTime / float(maxTime))), float(i));
+			}
+			glm::vec3 timeTranslation = directionVector * currentTime * speed;
+			baseObj.Draw	// bottom
+			(
+				shaderProgram,
+				camera,
+				glm::mat4(1.0f),
+				translation + timeTranslation,
+				glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
+				glm::vec3(scale, scale, scale)
+			);
+		}
+	}
+}
+
 void DrawBox(Shader shaderProgram, Camera camera, Mesh plane1)
 {
 	plane1.Draw	// bottom
@@ -467,6 +518,8 @@ int main()
 		// ... set view and projection matrix
 		DrawSkybox(boxShader, camera, right, left, top, bottom, front, back);
 		glDepthMask(GL_TRUE);
+
+		DrawMagnetEffect(shaderProgram, camera, plane2, crntTime, 1, 2.0f, -5.0f, 0.2f, glm::vec3(15.0f, -5.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 3);
 
 		model.Draw
 		(

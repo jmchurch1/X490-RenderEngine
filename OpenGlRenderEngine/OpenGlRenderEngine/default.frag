@@ -131,7 +131,7 @@ vec4 fog()
     float dist = length(fPosition.xyz);
     float fog_factor = (fog_maxdist - dist) /
                       (fog_maxdist - fog_mindist);
-    fog_factor = clamp(fog_factor, 0.0, 0.75);
+    fog_factor = clamp(fog_factor, 0.5, 0.75);
 
     return mix(fog_colour, texture(diffuse0, texCoord), fog_factor);
 }
