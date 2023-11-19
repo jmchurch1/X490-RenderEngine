@@ -156,6 +156,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="PointCloud.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -170,6 +171,7 @@
     <None Include="edge_detection.frag" />
     <None Include="light.frag" />
     <None Include="light.vert" />
+    <None Include="pointcloud.frag" />
     <None Include="reflect.frag" />
     <None Include="reflect.vert" />
     <None Include="secondPass.frag" />
@@ -184,6 +186,7 @@
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="PointCloud.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />

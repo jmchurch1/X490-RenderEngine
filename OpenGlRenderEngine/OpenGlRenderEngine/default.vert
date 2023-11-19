@@ -32,7 +32,6 @@ uniform mat4 translation;
 uniform mat4 rotation;
 uniform mat4 scale;
 
-
 void main()
 {
 	
@@ -47,5 +46,7 @@ void main()
 	
 	// Outputs the positions/coordinates of all vertices
 	gl_Position = camMatrix * vec4(crntPos, 1.0);
+	gl_PointSize = 4;
+
 	fPosition = gl_Position.xyz;
 }

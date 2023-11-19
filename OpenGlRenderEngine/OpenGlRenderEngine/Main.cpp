@@ -1,4 +1,5 @@
 #include"Model.h"
+#include"PointCloud.h"
 #include"Framebuffer.h"
 
 const unsigned int width = 800;
@@ -7,13 +8,41 @@ float reflectionBoxSize = 2.0f;
 float bigBoxSize = 10.0f;
 float skyBoxSize = 500;
 
+std::vector<Vertex> vertexList = std::vector<Vertex>();
+
 glm::vec3 PointOnCircle(glm::vec3 center, float radius, float angle)
 {
 	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
 	pos.x = center.x;
-	pos.y = center.y + radius * cos(angle * (3.14159 / 180));;
-	pos.z = center.z + +radius * sin(angle * (3.14159 / 180));
+	pos.y = center.y + radius * cos(angle * (3.14159 / 180));
+	pos.z = center.z + radius * sin(angle * (3.14159 / 180));
 	return pos;
+}
+
+glm::vec3 PointOnSphere(glm::vec3 center, float radius, float zAngle, float heightAngle)
+{
+	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
+	pos.x = center.x + radius * cos(zAngle * (3.14159 / 180)) * sin(heightAngle * (3.14159 / 180));
+	pos.y = center.y + radius * sin(zAngle * (3.14159 / 180)) * sin(heightAngle * (3.14159 / 180));
+	pos.z = center.z + radius * cos(heightAngle * (3.14159 / 180));
+	return pos;
+}
+
+// https://stackoverflow.com/questions/4436764/rotating-a-quaternion-on-1-axis
+glm::quat create_from_axis_angle(float xx, float yy, float zz, float a)
+{
+	// Here we calculate the sin( theta / 2) once for optimization
+	float factor = sin(a / 2.0);
+
+	// Calculate the x, y and z of the quaternion
+	float x = xx * factor;
+	float y = yy * factor;
+	float z = zz * factor;
+
+	// Calcualte the w value by cos( theta / 2 )
+	float w = cos(a / 2.0);
+
+	return glm::normalize(glm::quat(x, y, z, w));
 }
 
 
@@ -56,6 +85,75 @@ void DrawMagnetEffect(Shader shaderProgram, Camera camera, Mesh baseObj, float c
 			);
 		}
 	}
+}
+
+void DrawSphere(Shader shaderProgram, Camera camera, Mesh baseObj)
+{
+	float startingPosition = 0.0f;
+	float startingScale = 0.1f;
+	float scaleIncrement = 0.01f;
+	glm::quat startingRotation = glm::quat(0.0f, 1.0f, 0.0f, 0.0f);
+
+	int createdPlanes = 30;
+
+	for (int layer = 0; layer < 360; layer++)
+	{
+
+		baseObj.Draw	// bottom
+		(
+			shaderProgram,
+			camera,
+			glm::mat4(1.0f),
+			glm::vec3(0.0f, startingPosition, 0.0f),
+			startingRotation,
+			glm::vec3(startingScale, startingScale, startingScale)
+		);
+
+		// increment height of starting position
+		startingPosition -= 0.1f;
+
+		// increment/decrement scaling
+		if (layer < 180)
+		{
+			startingScale += scaleIncrement;
+		}
+		else
+		{
+			startingScale -= scaleIncrement;
+		}
+	}
+}
+
+PointCloud InitializePointCloud()
+{
+	// creating all the vertex points for the point cloud
+	// setting all normals to vec3(0,1,0)
+	// setting color to red
+
+	glm::vec3 currCenter = glm::vec3(0, 0, 0);
+	glm::vec3 normal = glm::vec3(0, 1, 0);
+	glm::vec3 color = glm::vec3(1, 0, 0);
+	float radius = 10.0f;
+
+	// initailize vertexList
+	if (vertexList.empty()) {
+		for (int j = 0; j < 181; j+= 2) {
+			for (int i = 0; i < 360; i+=2)
+			{
+				glm::vec3 position = PointOnSphere(currCenter, radius, i, j);
+				vertexList.push_back(
+					Vertex{ position, normal, color, glm::vec2((float)i / 360.0f, ((float)j + 90.0f) / 270.0f) }
+				);
+			}
+		}
+	}
+	std::vector <Texture> worldTex =
+	{
+		Texture("deathstar2.png", "diffuse", 0)
+	};
+
+	PointCloud cloud(vertexList, worldTex);
+	return cloud;
 }
 
 void DrawBox(Shader shaderProgram, Camera camera, Mesh plane1)
@@ -255,14 +353,14 @@ int main()
 	};
 
 	Vertex skyboxVertices[] = {
-		Vertex{ glm::vec3( -1.0f, -1.0f,  1.0f ), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)  },
-		Vertex{ glm::vec3( 1.0f, -1.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
-		Vertex{ glm::vec3( -1.0f,  1.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) },
-		Vertex{ glm::vec3( 1.0f,  1.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f) },
-		Vertex{ glm::vec3( -1.0f, -1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) },
-		Vertex{ glm::vec3( 1.0f, -1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
-		Vertex{ glm::vec3( -1.0f,  1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) },
-		Vertex{ glm::vec3( 1.0f,  1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f) }
+		Vertex{ glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)  },
+		Vertex{ glm::vec3(1.0f, -1.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
+		Vertex{ glm::vec3(-1.0f,  1.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) },
+		Vertex{ glm::vec3(1.0f,  1.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f) },
+		Vertex{ glm::vec3(-1.0f, -1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) },
+		Vertex{ glm::vec3(1.0f, -1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
+		Vertex{ glm::vec3(-1.0f,  1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f) },
+		Vertex{ glm::vec3(1.0f,  1.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f) }
 	};
 
 	float skyboxVerticesLong[] = {
@@ -329,7 +427,7 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-	
+
 	// tell glfw that the window we created wants to be used
 	// the context is an object that holds stuff (idrk yet)
 	glfwMakeContextCurrent(window);
@@ -345,6 +443,7 @@ int main()
 
 	//Shader reflectShader("default.vert", "reflect.frag");
 	// generate Shader object that takes in shader source code
+	Shader pointCloud("default.vert", "pointcloud.frag");
 	Shader shaderProgram("default.vert", "default.frag");
 	shaderProgram.Activate();
 
@@ -363,10 +462,15 @@ int main()
 	// storing mesh data
 	std::vector <Vertex> boxVerts(planeVertices, planeVertices + sizeof(planeVertices) / sizeof(Vertex));	// make vector of vertices with correct memory size
 	std::vector <GLuint> boxInd(planeIndices, planeIndices + sizeof(planeIndices) / sizeof(GLuint));		// make vector of indices with correct memory size
-	std::vector <Texture> boxTex = 
-	{ 
-		Texture("bricks.jpg", "diffuse", 0)
+	std::vector <Texture> boxTex =
+	{
+		Texture("sample.jpg", "diffuse", 0)
 	};
+	std::vector <Texture> colorTex =
+	{
+		Texture("colors.jpg", "diffuse", 0)
+	};
+
 
 	Shader skyboxShader("skybox.vert", "skybox.frag");
 
@@ -411,6 +515,7 @@ int main()
 
 	Mesh plane1(boxVerts, boxInd, boxTex);
 	Mesh plane2(boxVerts, boxInd, boxTex);
+	Mesh plane3(boxVerts, boxInd, colorTex);
 
 	Mesh right(boxVerts, boxInd, rightTex);
 	Mesh left(boxVerts, boxInd, leftTex);
@@ -441,12 +546,17 @@ int main()
 	glUniform4f(glGetUniformLocation(boxShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(boxShader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
+
+	PointCloud cloud = InitializePointCloud();
+
 	//Framebuffer fbo = Framebuffer::Framebuffer(width, height);
 
 	// Set up shaders and state for second blur pass, and render.
 
 	// enable the depth buffer
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_PROGRAM_POINT_SIZE);
+
 
 	// enable alpha blending
 	glEnable(GL_BLEND);
@@ -507,7 +617,7 @@ int main()
 
 
 		// clear the color every frame
-		glClearColor(.1f, .1f, .2f, 1.0f);
+		glClearColor(1.0f,1.0f,1.0f, 1.0f);
 		// add color to back buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
@@ -519,6 +629,7 @@ int main()
 		DrawSkybox(boxShader, camera, right, left, top, bottom, front, back);
 		glDepthMask(GL_TRUE);
 
+		/*
 		DrawMagnetEffect(shaderProgram, camera, plane2, crntTime, 1, 2.0f, -5.0f, 0.2f, glm::vec3(15.0f, -5.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 3);
 
 		model.Draw
@@ -584,7 +695,8 @@ int main()
 
 		
 		DrawBox(shaderProgram, camera, plane2);
-
+		*/
+		cloud.Draw(pointCloud, camera);
 
 		// bind back to the default framebuffer
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
